@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:paddingVertical="2dp"
+    android:paddingHorizontal="6dp"
+    android:layout_marginEnd="3dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/tag_bg">
+
+    <TextView
+        android:id="@+id/txt_tag_name"
+        android:text="PHP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>

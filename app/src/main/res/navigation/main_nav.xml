@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/homeFragment">
+    <fragment
+        android:id="@+id/loginActivity"
+        android:name="com.example.kan_it.ui.LoginActivity"
+        android:label="LoginActivity" />
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.kan_it.ui.HomeFragment"
+        android:label="HomeFragment" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.kan_it.ui.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.kan_it.ui.RegisterFragment"
+        android:label="RegisterFragment" />
+    <fragment
+        android:id="@+id/chatBotFragment"
+        android:name="com.example.kan_it.ui.ChatBotFragment"
+        android:label="fragment_chat_bot"
+        tools:layout="@layout/fragment_chat_bot" />
+    <fragment
+        android:id="@+id/auoLoginFragment"
+        android:name="com.example.kan_it.ui.AutoLoginFragment"
+        android:label="AuoLoginFragment" />
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.example.kan_it.ui.ForgotPasswordFragment"
+        android:label="ForgotPasswordFragment" />
+    <fragment
+        android:id="@+id/postCreatorFragment"
+        android:name="com.example.kan_it.ui.PostCreatorFragment"
+        android:label="PostCreatorFragment" />
+    <fragment
+        android:id="@+id/postDetailFragment"
+        android:name="com.example.kan_it.ui.PostDetailFragment"
+        android:label="fragment_post_detail"
+        tools:layout="@layout/fragment_post_detail" />
+</navigation>
