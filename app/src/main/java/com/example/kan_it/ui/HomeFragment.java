@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,17 +13,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
-import com.airbnb.lottie.L;
+import com.example.kan_it.DTO.CommentDTO;
 import com.example.kan_it.DTO.PostDTO;
 import com.example.kan_it.R;
 import com.example.kan_it.adapter.PostAdapter;
-import com.example.kan_it.core.FireAuth;
+import com.example.kan_it.core.FireStore;
 import com.example.kan_it.core.Logger;
 import com.example.kan_it.databinding.FragmentHomeBinding;
-import com.example.kan_it.model.Post;
 import com.example.kan_it.model.User;
 import com.example.kan_it.service.PostService;
 import com.example.kan_it.service.UserService;
@@ -35,13 +32,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
     FragmentHomeBinding mBinder;
 
-    PostAdapter postAdapter;
+    public static PostAdapter postAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,9 +78,8 @@ public class HomeFragment extends Fragment {
         Toast.makeText(requireActivity(), msg, Toast.LENGTH_SHORT).show();
     }
 
-    public void loadPost() {
-        mBinder.rcyPosts.setLayoutManager(new LinearLayoutManager(requireActivity().getApplicationContext(), RecyclerView.VERTICAL, false));
-        mBinder.rcyPosts.setAdapter(postAdapter);
+    public static void loadPost() {
+
         if (MainActivity.mPostViewModel.data.getValue() == null) {
             PostService.gI().getListPost(new OnCompleteListener<QuerySnapshot>() {
                 @Override
@@ -101,6 +99,31 @@ public class HomeFragment extends Fragment {
                                             postDTO.user_name = user.getUsername();
                                             postDTO.user_photo = user.getPhoto();
                                             postDTO.star = user.getStar();
+                                            // load comment
+                                            FireStore.gI().collection(FireStore.COMMENT_COLLECTION).whereEqualTo("postID", postDTO.getID()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    List<CommentDTO> commentDTOS = new ArrayList<>();
+                                                    if (task.isSuccessful()) {
+                                                        for (DocumentSnapshot documentSnapshot : task.getResult()) {
+                                                            CommentDTO commentDTO = documentSnapshot.toObject(CommentDTO.class);
+                                                            commentDTO.setID(documentSnapshot.getId());
+                                                            UserService.gI().getUserById(commentDTO.getUserID(), new OnCompleteListener<DocumentSnapshot>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                    if (task.isSuccessful()) {
+                                                                        User user = task.getResult().toObject(User.class);
+                                                                        commentDTO.user = user;
+                                                                        commentDTOS.add(commentDTO);
+                                                                        postDTO.post_comment_count = commentDTOS.size();
+                                                                        postAdapter.setData(postDTOS);
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                }
+                                            });
                                             postDTOS.add(postDTO);
                                             MainActivity.mPostViewModel.data.postValue(postDTOS);
                                         }
@@ -110,13 +133,13 @@ public class HomeFragment extends Fragment {
                         }
                         MainActivity.unLoader();
                     } else {
-                        showToast("Có lỗi xảy ra");
+//                        showToast("Có lỗi xảy ra");
                     }
                 }
             }, new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    showToast("Có lỗi xảy ra");
+//                    showToast("Có lỗi xảy ra");
                 }
             });
         }
@@ -127,6 +150,8 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         regListener();
+        mBinder.rcyPosts.setLayoutManager(new LinearLayoutManager(requireActivity().getApplicationContext(), RecyclerView.VERTICAL, false));
+        mBinder.rcyPosts.setAdapter(postAdapter);
         loadPost();
     }
 }

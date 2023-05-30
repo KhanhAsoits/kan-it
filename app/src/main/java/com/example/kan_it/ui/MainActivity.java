@@ -4,44 +4,28 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.PackageManagerCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.kan_it.R;
-import com.example.kan_it.core.FireStore;
-import com.example.kan_it.core.Logger;
 import com.example.kan_it.core.ShareDataManager;
 import com.example.kan_it.databinding.ActivityMainBinding;
+import com.example.kan_it.service.UserService;
 import com.example.kan_it.viewmodel.AuthViewModel;
 import com.example.kan_it.viewmodel.PostDetailViewModel;
 import com.example.kan_it.viewmodel.PostViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     public static AuthViewModel mAuthModel;
@@ -54,9 +38,27 @@ public class MainActivity extends AppCompatActivity {
     public static int IMAGE_SELECT_CODE = 1312;
     boolean isExitApp = false;
 
+    boolean isGiveStar = false;
+
     public interface IOpenFileChooser {
         public void choseImage();
     }
+
+    public void starService() {
+        if (!mAuthModel.wrapperAuth()) {
+            new Handler().postDelayed(() -> {
+                UserService.gI().upStar(mAuthModel.mCurrentUser.getUUID(), mAuthModel.mCurrentUser.getStar(), new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        mAuthModel.mCurrentUser.setStar(mAuthModel.mCurrentUser.getStar() + 1);
+                        isGiveStar = true;
+                        showToast("Bạn nhận được một sao");
+                    }
+                });
+            }, 10 * 60 * 1000);
+        }
+    }
+
 
     public static IOpenFileChooser mIOpenFileChooser;
 
@@ -120,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
         loadElement();
         initSharedReference();
         loadFileChooser();
+        starService();
         if (mAuthModel.autoLoginWrapper() && mAuthModel.wrapperAuth()) {
             mMenuController.navigate(R.id.auoLoginFragment);
         }

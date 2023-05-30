@@ -101,7 +101,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             mTxtName.setText(post.user_name);
             mTxtDuration.setText(post.getDurationTimeRead(post.getDesc().length()));
             mTxtComment.setText(String.valueOf(post.post_comment_count));
-            mTxtVote.setText(String.valueOf(post.getVote()));
+            mTxtVote.setText(String.valueOf(post.voteIds.size()));
             mTxtRead.setText(String.valueOf(post.getView()));
             mTxtBookMark.setText(String.valueOf(post.getBook_mark_count()));
             mTxtTitle.setText(post.getTitle());

@@ -27,6 +27,7 @@ public class Post {
     private List<String> tags = new ArrayList<>();
 
     public int post_comment_count = 0;
+    public List<String> voteIds = new ArrayList<>();
 
     public Post() {
     }

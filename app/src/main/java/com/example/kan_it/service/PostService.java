@@ -48,4 +48,30 @@ public class PostService {
     public void getListPost(OnCompleteListener<QuerySnapshot> onCompleteListener, OnFailureListener onFailureListener) {
         FireStore.gI().collection(FireStore.POST_COLLECTION).whereEqualTo("verify", true).get().addOnCompleteListener(onCompleteListener).addOnFailureListener(onFailureListener);
     }
+
+    public void getPostByUser(String userId, OnCompleteListener<QuerySnapshot> onCompleteListener, OnFailureListener onFailureListener) {
+        FireStore.gI().collection(FireStore.POST_COLLECTION).whereEqualTo("userID", userId).whereEqualTo("verify", true).limit(5).get().addOnCompleteListener(onCompleteListener).addOnFailureListener(onFailureListener);
+    }
+
+    public void increaseReader(String postId) {
+        FireStore.gI().collection(FireStore.POST_COLLECTION).document(postId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    Post post = task.getResult().toObject(Post.class);
+                    FireStore.gI().collection(FireStore.POST_COLLECTION).document(postId).update("view", post.getView() + 1);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+    }
+
+    public void giveVote(String uuid, List<String> currentIds, String postID, OnCompleteListener<Void> onCompleteListener) {
+        currentIds.add(uuid);
+        FireStore.gI().collection(FireStore.POST_COLLECTION).document(postID).update("voteIds", currentIds).addOnCompleteListener(onCompleteListener);
+    }
 }

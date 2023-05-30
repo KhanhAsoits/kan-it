@@ -5,8 +5,27 @@ public class Comment {
     private String content;
     private String userID;
     private int vote;
+    private String postID;
+
+    private long create_at;
 
     public Comment() {
+    }
+
+    public long getCreate_at() {
+        return create_at;
+    }
+
+    public void setCreate_at(long create_at) {
+        this.create_at = create_at;
+    }
+
+    public String getPostID() {
+        return postID;
+    }
+
+    public void setPostID(String postID) {
+        this.postID = postID;
     }
 
     public String getID() {
